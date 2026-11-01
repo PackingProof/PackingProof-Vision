@@ -1,0 +1,8 @@
+numpy==2.4.3
+onnx==1.21.0
+onnxruntime-gpu==1.24.4
+onnxslim==0.1.90
+opencv-python==4.13.0.92
+Pillow==12.1.1
+PyYAML==6.0.3
+ultralytics==8.4.34

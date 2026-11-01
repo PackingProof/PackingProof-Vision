@@ -1,0 +1,40 @@
+{
+  "task": {
+    "name": "waybill-obb",
+    "type": "obb",
+    "model_role": "vision-obb",
+    "classes": [
+      "Waybill"
+    ]
+  },
+  "dataset": {
+    "workspace_root": "${PACKINGPROOF_VISION_DATASET_ROOT}/prepared",
+    "output": "waybill_yolo_obb_v4",
+    "independent_test": "${PACKINGPROOF_VISION_DATASET_ROOT}/holdouts/independent_test",
+    "val_ratio": 0.2,
+    "seed": 20261031,
+    "min_instance_area": 0.005,
+    "stratify_by": [
+      "class_presence",
+      "capture_phase"
+    ],
+    "sources": [
+      {
+        "name": "pack_120855",
+        "path": "${PACKINGPROOF_VISION_DATASET_ROOT}/raw/PackingProof_RecognitionSamples_20261031-120855"
+      },
+      {
+        "name": "pack_203602",
+        "path": "${PACKINGPROOF_VISION_DATASET_ROOT}/raw/PackingProof_RecognitionSamples_20261031-203602"
+      },
+      {
+        "name": "pack_215222",
+        "path": "${PACKINGPROOF_VISION_DATASET_ROOT}/raw/PackingProof_RecognitionSamples_20261031-215222"
+      },
+      {
+        "name": "pack_220018",
+        "path": "${PACKINGPROOF_VISION_DATASET_ROOT}/raw/PackingProof_RecognitionSamples_20261031-220018"
+      }
+    ]
+  }
+}

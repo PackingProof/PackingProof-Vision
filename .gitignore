@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.venv/
+
+# Local dataset configuration and private data
+config/*.local.json
+PackingProof_RecognitionSamples_*/
+*_yolo_obb/
+*_yolo_obb_v*/
+*_independent_test/
+*.jpg
+*.jpeg
+*.png
+contact_*.jpg
+feedback.rar
+*.zip
+
+# Models and training outputs
+models/
+runs/
+dist/
+*.pt
+*.onnx
+*.cache
+
+# Editor and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

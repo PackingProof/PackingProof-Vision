@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+
+      - name: Install test dependencies
+        run: python -m pip install -r requirements/ci.txt
+
+      - name: Compile Python sources
+        run: python -m compileall -q prepare_obb_dataset.py prepare_obb_test.py train_obb_model.py evaluate_obb_model.py model_metadata.py onnx_graph.py scripts
+
+      - name: Run tests
+        run: python -m pytest
+
+      - name: Validate PowerShell environment resolver
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $errors = $null
+          $tokens = $null
+          Get-ChildItem scripts\*.ps1 | ForEach-Object {
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              $_.FullName,
+              [ref]$tokens,
+              [ref]$errors
+            ) | Out-Null
+            if ($errors.Count) {
+              throw "$($_.Name): $($errors -join '; ')"
+            }
+          }

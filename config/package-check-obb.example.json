@@ -1,0 +1,29 @@
+{
+  "task": {
+    "name": "package-check-obb",
+    "type": "obb",
+    "model_role": "package-check-obb",
+    "classes": [
+      "Package",
+      "MissingPart"
+    ]
+  },
+  "dataset": {
+    "workspace_root": "${PACKINGPROOF_VISION_DATASET_ROOT}",
+    "output": "package_check_obb_v1",
+    "independent_test": "${PACKINGPROOF_VISION_DATASET_ROOT}/package_check_test",
+    "val_ratio": 0.2,
+    "seed": 20261101,
+    "min_instance_area": 0.001,
+    "stratify_by": [
+      "class_presence",
+      "capture_phase"
+    ],
+    "sources": [
+      {
+        "name": "workstation_a",
+        "path": "${PACKINGPROOF_VISION_DATASET_ROOT}/package_check_workstation_a"
+      }
+    ]
+  }
+}
