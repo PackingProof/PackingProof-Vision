@@ -8,10 +8,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
-REQUIRED_METADATA = {
+BASE_REQUIRED_METADATA = {
     "packingproof.model",
     "packingproof.training",
     "packingproof.dataset",
+}
+EVALUATION_METADATA = {
+    "packingproof.independent_evaluation",
+    "packingproof.evaluation_summary",
 }
 
 
@@ -23,14 +27,44 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def contains_map50(value: object) -> bool:
+    if isinstance(value, dict):
+        map50 = value.get("map50")
+        if isinstance(map50, (int, float)):
+            return True
+        return any(contains_map50(item) for item in value.values())
+    if isinstance(value, list):
+        return any(contains_map50(item) for item in value)
+    return False
+
+
+def has_independent_evaluation(metadata: dict[str, str]) -> bool:
+    for key in EVALUATION_METADATA:
+        raw = metadata.get(key)
+        if not raw:
+            continue
+        try:
+            value = json.loads(raw)
+        except (TypeError, json.JSONDecodeError):
+            continue
+        if contains_map50(value):
+            return True
+    return False
+
+
 def validate_onnx(model_path: Path) -> None:
     import onnxruntime as ort
 
     session = ort.InferenceSession(str(model_path), providers=["CPUExecutionProvider"])
     metadata = session.get_modelmeta().custom_metadata_map
-    missing = sorted(REQUIRED_METADATA - set(metadata))
+    missing = sorted(BASE_REQUIRED_METADATA - set(metadata))
     if missing:
         raise ValueError(f"Model metadata is incomplete: {', '.join(missing)}")
+    if not has_independent_evaluation(metadata):
+        raise ValueError(
+            "Model metadata is missing usable independent evaluation data: "
+            + ", ".join(sorted(EVALUATION_METADATA))
+        )
 
 
 def release_urls(repository: str, release_tag: str, asset_name: str) -> list[str]:
